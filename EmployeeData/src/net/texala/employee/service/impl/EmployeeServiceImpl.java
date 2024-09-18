@@ -1,6 +1,7 @@
 package net.texala.employee.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import net.texala.employee.exception.Exception.ServiceException;
 import net.texala.employee.model.Employee;
@@ -32,31 +33,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee update(Employee employee) {
-		csvUtility.findById(employee.getId())
-				.orElseThrow(() -> new ServiceException("Employee with ID '" + employee.getId() + "' not found."));
-		csvUtility.update(employee);
-		return employee;
-	}
+    public Employee update(Employee employee) {
+        findById(employee.getId());  
+        csvUtility.update(employee);
+        return employee;
+    }
 
 	@Override
-	public boolean delete(Long id) {
-		csvUtility.findById(id).orElseThrow(() -> new ServiceException("Employee with ID '" + id + "' not found."));
-		csvUtility.delete(id);
-		return true;
-	}
+    public boolean delete(Long id) {
+        findById(id);  
+        csvUtility.delete(id);
+        return true;
+    }
 
 	@Override
-	public Employee findByEmail(String email) {
-	    return csvUtility.findAll().stream()
-	        .filter(emp -> emp.getEmail().equalsIgnoreCase(email))
-	        .findFirst()
-	        .orElse(null);  
-	}
+    public Optional<Employee> findByEmail(String email) {
+        return csvUtility.findAll().stream()
+                .filter(emp -> emp.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+    }
 
-
-	@Override
-	public Employee findId(Long id) {
-		return csvUtility.findById(id).orElse(null);
-	}
 }

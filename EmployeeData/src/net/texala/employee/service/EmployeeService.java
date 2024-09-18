@@ -1,6 +1,7 @@
 package net.texala.employee.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import net.texala.employee.model.Employee;
 
@@ -16,7 +17,6 @@ public interface EmployeeService {
 
 	boolean delete(Long id);
 
-	Employee findByEmail(String email);
+	Optional<Employee> findByEmail(String email);
 
-	Employee findId(Long id);
 }

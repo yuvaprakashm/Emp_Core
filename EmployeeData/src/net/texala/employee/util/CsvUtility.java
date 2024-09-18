@@ -33,22 +33,25 @@ public class CsvUtility {
 
 	public void add(Employee employee) {
 		employeeCache.add(employee);
-		writeToCsv(employeeCache);
+		writeToCsv();
 	}
 
 	public void update(Employee employee) {
-		Employee existingEmployee = findById(employee.getId())
-				.orElseThrow(() -> new ServiceException("Employee with ID '" + employee.getId() + "' not found."));
-		employeeCache.remove(existingEmployee);
-		employeeCache.add(employee);
-		writeToCsv(employeeCache);
-	}
+        Optional<Employee> existingEmployeeOpt = findById(employee.getId());
+        if (!existingEmployeeOpt.isPresent()) {
+            throw new ServiceException("Employee with ID '" + employee.getId() + "' not found.");
+        }
+
+        employeeCache.remove(existingEmployeeOpt.get());
+        employeeCache.add(employee);
+        writeToCsv();
+    }
 
 	public void delete(Long id) {
 		Employee employeeToRemove = findById(id)
 				.orElseThrow(() -> new ServiceException("Employee with ID '" + id + "' not found."));
 		employeeCache.remove(employeeToRemove);
-		writeToCsv(employeeCache);
+		writeToCsv();
 	}
 
 	private List<Employee> readEmployeesFromCsv() {
@@ -80,12 +83,12 @@ public class CsvUtility {
 		}
 	}
 
-	private void writeToCsv(List<Employee> employees) {
+	private void writeToCsv() {
 		Path path = Paths.get(FILE_PATH);
 		try (BufferedWriter bw = Files.newBufferedWriter(path)) {
 			bw.write(CSV_HEADER);
 			bw.newLine();
-			for (Employee emp : employees) {
+			for (Employee emp : employeeCache) {
 				bw.write(String.join(",", String.valueOf(emp.getId()), emp.getName(), emp.getEmail(),
 						String.valueOf(emp.getSalary()), emp.getDob()));
 				bw.newLine();
