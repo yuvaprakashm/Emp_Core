@@ -24,16 +24,16 @@ public class CsvUtility {
 	}
 
 	public List<Employee> findAll() {
-		return new ArrayList<>(employeeCache);
+		return Collections.unmodifiableList(employeeCache);//return new ArrayList<>(employeeCache);
 	}
-
+	
 	public Optional<Employee> findById(Long id) {
 		return employeeCache.stream().filter(emp -> emp.getId().equals(id)).findFirst();
 	}
 
 	public void add(Employee employee) {
 		employeeCache.add(employee);
-		writeToCsv(employeeCache);
+		writeToCsv();
 	}
 
 	public void update(Employee employee) {
@@ -41,14 +41,14 @@ public class CsvUtility {
 				.orElseThrow(() -> new ServiceException("Employee with ID '" + employee.getId() + "' not found."));
 		employeeCache.remove(existingEmployee);
 		employeeCache.add(employee);
-		writeToCsv(employeeCache);
+		writeToCsv();
 	}
 
 	public void delete(Long id) {
 		Employee employeeToRemove = findById(id)
 				.orElseThrow(() -> new ServiceException("Employee with ID '" + id + "' not found."));
 		employeeCache.remove(employeeToRemove);
-		writeToCsv(employeeCache);
+		writeToCsv();
 	}
 
 	private List<Employee> readEmployeesFromCsv() {
@@ -80,12 +80,12 @@ public class CsvUtility {
 		}
 	}
 
-	private void writeToCsv(List<Employee> employees) {
+		private void writeToCsv() {//private void writeToCsv(List<Employee> employees) {
 		Path path = Paths.get(FILE_PATH);
 		try (BufferedWriter bw = Files.newBufferedWriter(path)) {
 			bw.write(CSV_HEADER);
 			bw.newLine();
-			for (Employee emp : employees) {
+			for (Employee emp : employeeCache) {//for (Employee emp : employees) {
 				bw.write(String.join(",", String.valueOf(emp.getId()), emp.getName(), emp.getEmail(),
 						String.valueOf(emp.getSalary()), emp.getDob()));
 				bw.newLine();
