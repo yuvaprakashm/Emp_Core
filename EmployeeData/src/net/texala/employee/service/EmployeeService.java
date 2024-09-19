@@ -18,5 +18,4 @@ public interface EmployeeService {
 
 	Employee findByEmail(String email);
 
-	Employee findId(Long id);
 }

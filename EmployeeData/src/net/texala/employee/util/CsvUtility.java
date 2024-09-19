@@ -1,16 +1,25 @@
 package net.texala.employee.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.texala.employee.exception.Exception.ServiceException;
 import net.texala.employee.model.Employee;
 
 public class CsvUtility {
+
 	private static final String FILE_PATH = "resources/employees.csv";
 	private static final String CSV_HEADER = "ID,Name,Email,Salary,DOB";
 	private List<Employee> employeeCache = new ArrayList<>();
@@ -24,9 +33,9 @@ public class CsvUtility {
 	}
 
 	public List<Employee> findAll() {
-		return Collections.unmodifiableList(employeeCache);//return new ArrayList<>(employeeCache);
+		return new ArrayList<>(employeeCache);
 	}
-	
+
 	public Optional<Employee> findById(Long id) {
 		return employeeCache.stream().filter(emp -> emp.getId().equals(id)).findFirst();
 	}
@@ -67,7 +76,7 @@ public class CsvUtility {
 					emp.setName(data[1]);
 					emp.setEmail(data[2]);
 					emp.setSalary(Double.parseDouble(data[3]));
-					emp.setDob(data[4]);
+					emp.setDob(LocalDate.parse(data[4], DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 					return emp;
 				} catch (NumberFormatException e) {
 					System.err.println("Invalid number format in CSV data: " + e.getMessage());
@@ -80,14 +89,15 @@ public class CsvUtility {
 		}
 	}
 
-		private void writeToCsv() {//private void writeToCsv(List<Employee> employees) {
+	private void writeToCsv() {
 		Path path = Paths.get(FILE_PATH);
 		try (BufferedWriter bw = Files.newBufferedWriter(path)) {
 			bw.write(CSV_HEADER);
 			bw.newLine();
-			for (Employee emp : employeeCache) {//for (Employee emp : employees) {
+			for (Employee emp : employeeCache) {
 				bw.write(String.join(",", String.valueOf(emp.getId()), emp.getName(), emp.getEmail(),
-						String.valueOf(emp.getSalary()), emp.getDob()));
+						String.valueOf(emp.getSalary()),
+						emp.getDob().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
 				bw.newLine();
 			}
 		} catch (IOException e) {

@@ -1,12 +1,14 @@
 package net.texala.employee.model;
 
+import java.time.LocalDate;
+
 public class Employee {
 
 	private Long id;
 	private String name;
 	private String email;
 	private double salary;
-	private String dob;
+	private LocalDate dob;
 
 	public Long getId() {
 		return id;
@@ -40,18 +42,18 @@ public class Employee {
 		this.salary = salary;
 	}
 
-	public String getDob() {
+	public LocalDate getDob() {
 		return dob;
 	}
 
-	public void setDob(String dob) {
+	public void setDob(LocalDate dob) {
 		this.dob = dob;
 	}
 
 	public Employee() {
 	}
 
-	public Employee(Long id, String name, String email, double salary, String dob) {
+	public Employee(Long id, String name, String email, double salary, LocalDate dob) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
@@ -61,7 +63,7 @@ public class Employee {
 
 	@Override
 	public String toString() {
-		return "Employee [ID = " + id + ", Name = " + name + ", Email = " + email + ", Salary = " + salary + ", DOB = "
+		return "Employee Details --> [ID = " + id + ", Name = " + name + ", Email = " + email + ", Salary = " + salary + ", DOB = "
 				+ dob + "]";
 	}
 
