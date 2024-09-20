@@ -1,4 +1,4 @@
-package net.texala.employee.util;
+package net.texala.employee.csv.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +20,9 @@ import net.texala.employee.model.Employee;
 public class CsvUtility {
 
 	private static final String FILE_PATH = "resources/employees.csv";
+
 	private static final String CSV_HEADER = "ID,Name,Email,Salary,DOB";
+
 	private List<Employee> employeeCache = new ArrayList<>();
 
 	public CsvUtility() {
@@ -30,6 +31,7 @@ public class CsvUtility {
 
 	private void loadEmployees() {
 		employeeCache = readEmployeesFromCsv();
+
 	}
 
 	public List<Employee> findAll() {
@@ -46,25 +48,29 @@ public class CsvUtility {
 	}
 
 	public void update(Employee employee) {
-		Employee existingEmployee = findById(employee.getId())
-				.orElseThrow(() -> new ServiceException("Employee with ID '" + employee.getId() + "' not found."));
-		employeeCache.remove(existingEmployee);
+		delete(employee.getId());
 		employeeCache.add(employee);
 		writeToCsv();
 	}
 
 	public void delete(Long id) {
-		Employee employeeToRemove = findById(id)
-				.orElseThrow(() -> new ServiceException("Employee with ID '" + id + "' not found."));
-		employeeCache.remove(employeeToRemove);
+		employeeCache.remove(
+				findById(id).orElseThrow(() -> new ServiceException("Employee with ID '" + id + "' not found.")));
 		writeToCsv();
 	}
-
+	
+	public Employee findByEmail(String email) {
+        return employeeCache.stream()
+                .filter(emp -> emp.getEmail().equalsIgnoreCase(email))
+                .findFirst()
+                .orElse(null);
+    }
+	
 	private List<Employee> readEmployeesFromCsv() {
 		Path path = Paths.get(FILE_PATH);
 		if (!Files.exists(path)) {
 			System.err.println("CSV file not found.");
-			return Collections.emptyList();
+			return new ArrayList<>();
 		}
 		try (BufferedReader br = Files.newBufferedReader(path)) {
 			br.readLine();
@@ -85,7 +91,7 @@ public class CsvUtility {
 			}).filter(Objects::nonNull).collect(Collectors.toList());
 		} catch (IOException e) {
 			System.err.println("Error reading CSV file: " + e.getMessage());
-			return Collections.emptyList();
+			return new ArrayList<>();
 		}
 	}
 
