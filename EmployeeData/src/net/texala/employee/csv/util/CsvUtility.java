@@ -11,10 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import net.texala.employee.exception.Exception.ServiceException;
 import net.texala.employee.model.Employee;
 
 public class CsvUtility {
@@ -23,50 +21,7 @@ public class CsvUtility {
 
 	private static final String CSV_HEADER = "ID,Name,Email,Salary,DOB";
 
-	private List<Employee> employeeCache = new ArrayList<>();
-
-	public CsvUtility() {
-		loadEmployees();
-	}
-
-	private void loadEmployees() {
-		employeeCache = readEmployeesFromCsv();
-
-	}
-
-	public List<Employee> findAll() {
-		return new ArrayList<>(employeeCache);
-	}
-
-	public Optional<Employee> findById(Long id) {
-		return employeeCache.stream().filter(emp -> emp.getId().equals(id)).findFirst();
-	}
-
-	public void add(Employee employee) {
-		employeeCache.add(employee);
-		writeToCsv();
-	}
-
-	public void update(Employee employee) {
-		delete(employee.getId());
-		employeeCache.add(employee);
-		writeToCsv();
-	}
-
-	public void delete(Long id) {
-		employeeCache.remove(
-				findById(id).orElseThrow(() -> new ServiceException("Employee with ID '" + id + "' not found.")));
-		writeToCsv();
-	}
-	
-	public Employee findByEmail(String email) {
-        return employeeCache.stream()
-                .filter(emp -> emp.getEmail().equalsIgnoreCase(email))
-                .findFirst()
-                .orElse(null);
-    }
-	
-	private List<Employee> readEmployeesFromCsv() {
+	public List<Employee> readEmployeesFromCsv() {
 		Path path = Paths.get(FILE_PATH);
 		if (!Files.exists(path)) {
 			System.err.println("CSV file not found.");
@@ -95,12 +50,12 @@ public class CsvUtility {
 		}
 	}
 
-	private void writeToCsv() {
+	public void writeToCsv(List<Employee> employees) {
 		Path path = Paths.get(FILE_PATH);
 		try (BufferedWriter bw = Files.newBufferedWriter(path)) {
 			bw.write(CSV_HEADER);
 			bw.newLine();
-			for (Employee emp : employeeCache) {
+			for (Employee emp : employees) {
 				bw.write(String.join(",", String.valueOf(emp.getId()), emp.getName(), emp.getEmail(),
 						String.valueOf(emp.getSalary()),
 						emp.getDob().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));

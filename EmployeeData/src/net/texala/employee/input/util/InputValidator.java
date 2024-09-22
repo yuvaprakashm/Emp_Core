@@ -5,13 +5,17 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import net.texala.employee.csv.util.CsvUtility;
+
 import net.texala.employee.exception.Exception.ServiceException;
 import net.texala.employee.model.Employee;
+import net.texala.employee.service.impl.EmployeeServiceImpl;
 
 public class InputValidator {
+	private EmployeeServiceImpl employeeServiceImpl;
 
-	private CsvUtility csvUtility = new CsvUtility();
+	public InputValidator(EmployeeServiceImpl employeeServiceImpl) {
+		this.employeeServiceImpl = employeeServiceImpl;
+	}
 
 	public Long promptForLong(Scanner scanner, String message) {
 		Long value = null;
@@ -63,7 +67,7 @@ public class InputValidator {
 	}
 
 	public boolean isEmailUnique(String email, Long id) {
-		Employee employee = csvUtility.findByEmail(email);
+		Employee employee =employeeServiceImpl.findByEmail(email);
 		return employee == null || employee.getId().equals(id);
 	}
 
