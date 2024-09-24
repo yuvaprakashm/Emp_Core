@@ -3,7 +3,6 @@ package net.texala.employee.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import net.texala.employee.csv.util.CsvUtility;
 import net.texala.employee.input.util.InputValidator;
@@ -16,26 +15,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	private InputValidator inputValidator = new InputValidator(null);
 
-	private List<Employee> employeeCache = new ArrayList<>();
+	private List<Employee> employeeList = new ArrayList<>();
 
 	public EmployeeServiceImpl() {
 		inputValidator = new InputValidator(this);
-		employeeCache = csvUtility.readEmployeesFromCsv();
+		employeeList = csvUtility.readEmployeesFromCsv();
 	}
 
-	@Override
-	public void findAll() {
-		if (employeeCache.isEmpty()) {
-			System.out.println("No employees found.");
-		} else {
-			employeeCache.forEach(System.out::println);
-		}
-	}
+	  @Override
+	    public List<Employee> findAll() {
+	        return employeeList;  
+	    }
 
 	@Override
-	public void findById(Scanner scanner) {
-		Long id = inputValidator.promptForLong(scanner, "Enter Employee ID to find: ");
-		Optional<Employee> employee = employeeCache.stream().filter(emp -> emp.getId().equals(id)).findFirst();
+	public void fetchById(Long id) {
+		Optional<Employee> employee = employeeList.stream().filter(emp -> emp.getId().equals(id)).findFirst();
 		if (employee.isPresent()) {
 			System.out.println("Employee Details: " + employee.get());
 		} else {
@@ -44,7 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	public Employee findByEmail(String email) {
-		return employeeCache.stream().filter(emp -> emp.getEmail().equalsIgnoreCase(email)).findFirst().orElse(null);
+		return employeeList.stream().filter(emp -> emp.getEmail().equalsIgnoreCase(email)).findFirst().orElse(null);
 	}
 
 	public boolean isEmailUnique(String email, Long id) {
@@ -52,43 +46,37 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return employee == null || employee.getId().equals(id);
 	}
 
-	@Override
-	public void add(Scanner scanner) {
-		Long id = inputValidator.promptForLong(scanner, "Enter Employee ID: ");
-		if (employeeCache.stream().anyMatch(emp -> emp.getId().equals(id))) {
-			System.out.println("Error: Employee with ID '" + id + "' already exists.");
-			return;
-		}
-		employeeCache.add(inputValidator.collectEmployeeData(scanner, id));
-		csvUtility.writeToCsv(employeeCache);
-		System.out.println("Employee added successfully");
 
-	}
-
+	  @Override
+	    public void add(Employee employee) {
+	        if (employee == null) {
+	            return;  
+	        }
+	        employeeList.add(employee);
+	        csvUtility.writeToCsv(employeeList);
+	        System.out.println("Employee added successfully");
+	    }
 	@Override
-	public void update(Scanner scanner) {
-		Long id = inputValidator.promptForLong(scanner, "Enter Employee ID to update: ");
-		Optional<Employee> existingEmployee = employeeCache.stream().filter(emp -> emp.getId().equals(id)).findFirst();
+	public void update(Employee employee) {
+		Optional<Employee> existingEmployee = employeeList.stream().filter(emp -> emp.getId().equals(employee.getId())).findFirst();
 		if (!existingEmployee.isPresent()) {
-			System.out.println("Error: Employee with ID '" + id + "' not found.");
 			return;
 		}
-		employeeCache.remove(existingEmployee.get());
-		employeeCache.add(inputValidator.collectEmployeeData(scanner, id));
-		csvUtility.writeToCsv(employeeCache);
+		employeeList.remove(existingEmployee.get());
+		employeeList.add(employee);
+		csvUtility.writeToCsv(employeeList);
 		System.out.println("Employee updated successfully:");
 	}
 
 	@Override
-	public void delete(Scanner scanner) {
-		Long id = inputValidator.promptForLong(scanner, "Enter Employee ID to delete: ");
-		Optional<Employee> employeeToDelete = employeeCache.stream().filter(emp -> emp.getId().equals(id)).findFirst();
+	public void delete(Long id) {
+		Optional<Employee> employeeToDelete = employeeList.stream().filter(emp -> emp.getId().equals(id)).findFirst();
 		if (!employeeToDelete.isPresent()) {
 			System.out.println("Error: Employee with ID '" + id + "' not found.");
 			return;
 		}
-		employeeCache.remove(employeeToDelete.get());
-		csvUtility.writeToCsv(employeeCache);
+		employeeList.remove(employeeToDelete.get());
+		csvUtility.writeToCsv(employeeList);
 		System.out.println("Employee deleted successfully.");
 	}
  

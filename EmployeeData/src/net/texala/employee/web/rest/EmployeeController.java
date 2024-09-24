@@ -2,57 +2,52 @@ package net.texala.employee.web.rest;
 
 import java.util.Scanner;
 
-import net.texala.employee.enums.Operation;
+import net.texala.employee.input.util.InputValidator;
+import net.texala.employee.model.Employee;
 import net.texala.employee.service.impl.EmployeeServiceImpl;
 
 public class EmployeeController {
 
 	private static EmployeeServiceImpl employeeService = new EmployeeServiceImpl();
+	private static InputValidator inputValidator = new InputValidator(employeeService);
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
-		int option = 0;
 
-		while (option != Operation.EXIT.getValue()) {
+		while (true) {
 			System.out.println("\nChoose Operation :");
-			for (Operation operation : Operation.values()) {
-				System.out.println(operation.getValue() + ". " + operation.getDescription());
-			}
+			inputValidator.display();
 			System.out.print("Enter your choice: ");
 
 			if (scanner.hasNextInt()) {
-				option = scanner.nextInt();
+				int option = scanner.nextInt();
 				scanner.nextLine();
-				try {
-					Operation operation = Operation.fromValue(option);
-					switch (operation) {
-					case ADD:
-						employeeService.add(scanner);
-						break;
-					case UPDATE:
-						employeeService.update(scanner);
-						break;
-					case DELETE:
-						employeeService.delete(scanner);
-						break;
-					case FIND_BY_ID:
-						employeeService.findById(scanner);
-						break;
-					case FETCH_ALL:
-						employeeService.findAll();
-						break;
-					case EXIT:
-						System.out.println("Exiting...");
-						break;
-					}
-				} catch (IllegalArgumentException e) {
-					System.out.println("Invalid choice! Try again.");
+				switch (option) {
+				case 1:
+				    employeeService.add(inputValidator.collectEmployeeData(scanner, inputValidator.promptForLong(scanner, "Enter Employee ID to Add: ")));
+				    break;
+				case 2:
+				    Employee updatedEmployee = inputValidator.collectEmployeeData(scanner,inputValidator.promptForLong(scanner, "Enter Employee ID to update: "), true);
+				    if (updatedEmployee != null) employeeService.update(updatedEmployee);
+				    break;
+				case 3:
+					employeeService.delete(inputValidator.promptForLong(scanner, "Enter Employee ID to delete: "));
+					break;
+				case 4:
+					employeeService.fetchById(inputValidator.promptForLong(scanner, "Enter Employee ID to find: "));
+					break;
+				case 5:
+					employeeService.findAll();
+					break;
+				case 6:
+					System.out.println("Exiting...");
+					scanner.close();
+					return;
 				}
 			} else {
 				System.out.println("Error: Invalid input. Please choose the correct option.");
 				scanner.nextLine();
 			}
 		}
-		scanner.close();
 	}
 }

@@ -1,17 +1,19 @@
 package net.texala.employee.service;
 
-import java.util.Scanner;
+import java.util.List;
+
+import net.texala.employee.model.Employee;
 
 public interface EmployeeService {
 
-	void findAll();
+	List<Employee> findAll();
 
-	void findById(Scanner scanner);
+	void fetchById(Long id);
 
-	void add(Scanner scanner);
+	void add(Employee employee);
 
-	void update(Scanner scanner);
+	void update(Employee employee);
 
-	void delete(Scanner scanner);
+	void delete(Long id);
 
 }

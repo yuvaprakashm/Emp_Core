@@ -67,7 +67,7 @@ public class InputValidator {
 	}
 
 	public boolean isEmailUnique(String email, Long id) {
-		Employee employee =employeeServiceImpl.findByEmail(email);
+		Employee employee = employeeServiceImpl.findByEmail(email);
 		return employee == null || employee.getId().equals(id);
 	}
 
@@ -129,11 +129,38 @@ public class InputValidator {
 	}
 
 	public Employee collectEmployeeData(Scanner scanner, Long id) {
+		if (employeeServiceImpl.findAll().stream().anyMatch(emp -> emp.getId().equals(id))) {
+			System.out.println("Error: Employee with ID '" + id + "' already exists.");
+			return null;
+		}
 		String name = promptForString(scanner, "Enter Name: ");
 		String email = promptForUniqueEmail(scanner, id);
 		double salary = promptForValidSalary(scanner);
 		LocalDate dob = promptForDate(scanner, "Enter DOB (dd-MM-yyyy): ");
 		return new Employee(id, name, email, salary, dob);
+	}
+
+	public void display() {
+		System.out.println("1. Add ");
+		System.out.println("2. Update ");
+		System.out.println("3. Delete ");
+		System.out.println("4. FindbyID");
+		System.out.println("5. FetchAll ");
+		System.out.println("6. Exit");
+	}
+
+	public Employee collectEmployeeData(Scanner scanner, Long id, boolean isUpdate) {
+	    if (isUpdate && employeeServiceImpl.findAll().stream().noneMatch(emp -> emp.getId().equals(id))) {
+	        System.out.println("Error: Employee with ID '" + id + "' not found.");
+	        return null;  
+	    }
+
+	    String name = promptForString(scanner, "Enter Name: ");
+	    String email = promptForUniqueEmail(scanner, id);
+	    double salary = promptForValidSalary(scanner);
+	    LocalDate dob = promptForDate(scanner, "Enter DOB (dd-MM-yyyy): ");
+	    
+	    return new Employee(id, name, email, salary, dob);
 	}
 
 }
