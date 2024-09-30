@@ -7,7 +7,7 @@ public interface EmployeeService {
 
 	List<Employee> findAll();
 
-	void fetchById(Long id);
+	Employee fetchById(Long id);
 
 	void add(Employee employee);
 
