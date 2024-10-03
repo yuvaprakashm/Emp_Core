@@ -1,6 +1,8 @@
 package net.texala.employee.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import static net.texala.employee.constant.Constants.DATE_FORMAT;
 
 public class Employee {
 
@@ -63,6 +65,6 @@ public class Employee {
 
 	@Override
     public String toString() {
-        return id + "," + name + "," + email + "," + salary + "," + dob;
+        return id + ", " + name + ", " + email + ", " + salary + ", " + dob.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 }

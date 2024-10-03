@@ -5,29 +5,27 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
 import net.texala.employee.constant.Constants;
 import net.texala.employee.model.Employee;
 
 public class CsvUtility {
 	
-	public static final String fileName = "resources/employees.csv";
-
 	public static final String HEADER = "ID,Name,Email,Salary,DOB";
+	
+    public static final String FILEPATH = "src/resources/employees.csv";
 
-
-
+    
 	public static List<Employee> readFromCSV() {
 		List<Employee> employees = new ArrayList<>();
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(""))))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(FILEPATH))))) {
 			String line = reader.readLine(); // Skip header line
 			while ((line = reader.readLine()) != null) {
 				String[] data = line.split(",");
@@ -43,23 +41,25 @@ public class CsvUtility {
 		return employees;
 	}
 
+ 
 	public static void writeDataToCSV(List<Employee> employees) {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		try {
-			Path outputPath = Path.of(classLoader.getResource("").toURI()).resolve(fileName);
-			try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
-				writer.write(HEADER);
-				writer.newLine();
-				for (Employee employee : employees) {
-					writer.write(employee.toString());
-					writer.newLine();
-				}
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    try {
+	    	Path outputPath = Paths.get(FILEPATH);
+	        Files.createDirectories(outputPath.getParent());
+	        try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
+	            writer.write(HEADER);
+	            writer.newLine();
+	            for (Employee employee : employees) {
+	                writer.write(employee.toString());
+	                writer.newLine();
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
+
+
 }
