@@ -1,11 +1,12 @@
 package net.texala.employee.service;
 
-import java.util.List;
+import java.util.Map;
+
 import net.texala.employee.model.Employee;
 
 public interface EmployeeService {
 
-	List<Employee> findAll();
+	Map<Long, Employee> findAll();
 
 	Employee fetchById(Long id);
 

@@ -13,7 +13,6 @@ import static net.texala.employee.constant.Constants.RECORD_DELETED_SUCCESSFULLY
 import static net.texala.employee.constant.Constants.RECORD_UPDATED_SUCCESSFULLY;
 import static net.texala.employee.constant.Constants.RECORD_ADDED_SUCCESSFULLY;
 import java.util.Scanner;
-
 import net.texala.employee.enums.OptionType;
 import net.texala.employee.input.util.Utility;
 import net.texala.employee.model.Employee;
@@ -41,7 +40,7 @@ public class EmployeeController {
 			printAllOptionTypes();
 			System.out.print(ENTER_YOUR_CHOICE);
 			if (scanner.hasNextInt()) {
-				int choice = scanner.nextInt();// Need to print all operation types
+				int choice = scanner.nextInt(); 
 				OptionType option = getOptionType(choice);
 				if (option != null) {
 					handleOption(option);
@@ -50,14 +49,13 @@ public class EmployeeController {
 				}
 			} else {
 				System.out.println(ERROR_INVALID_OPTION);
-				scanner.nextLine(); // Clear invalid input
+				scanner.nextLine();  
 			}
 		}
 	}
 
 	private void printAllOptionTypes() {
 		int index = 1;
-		System.out.println();
 		for (OptionType option : OptionType.values()) {
 			System.out.println(index + ". " + option);
 			index++;
@@ -75,7 +73,8 @@ public class EmployeeController {
 	private void handleOption(OptionType option) {
 		switch (option) {
 		case FETCHALL:
-			employeeService.findAll().forEach(System.out::println);
+			employeeService.findAll().forEach((id, employee) -> System.out.println(employee));
+
 			break;
 		case FETCH:
 			fetchById();
@@ -127,7 +126,7 @@ public class EmployeeController {
 		System.out.print(ENTER_EMPLOYEE_EMAIL);
 		emp.setEmail(scanner.next());
 		System.out.print(ENTER_EMPLOYEE_SALARY);
-		emp.setSalary(Utility.hasSalary(scanner));
+		emp.setSalary(Utility.hasSalary(scanner.nextDouble()));
 		System.out.print(ENTER_EMPLOYEE_DOB);
 		emp.setDob(Utility.hasDate(Utility.toLocalDate(scanner.next()))); 
 		return emp;

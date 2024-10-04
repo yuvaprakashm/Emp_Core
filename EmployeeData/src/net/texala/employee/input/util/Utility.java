@@ -51,30 +51,22 @@ public class Utility {
 			throw new RuntimeException(ERROR_DATE_INVALID);
 		}
 	}
-	
-	public static double hasSalary(Scanner scanner) {
-	    double salary;
-	    while (true) {
-	        if (scanner.hasNextDouble()) {
-	            salary = scanner.nextDouble();
-	            if (salary > 20000) return salary;
-	        } else {
-	            scanner.next(); 
-	        }
-	        System.err.println(SALARY_MUST_BE_GREATER_THAN_20000);
-	    }
+
+	public static double hasSalary(double salary) {
+		if (salary > 20000) {
+			return salary;
+		}
+		throw new IllegalArgumentException(SALARY_MUST_BE_GREATER_THAN_20000);
 	}
-	
+
 	public static LocalDate hasDate(LocalDate dob) {
-		
-        if (dob.isAfter(LocalDate.now())) {
-            throw new RuntimeException(DATE_OF_BIRTH_CANNOT_BE_IN_FUTURE);
-        }
-        int age = Period.between(dob, LocalDate.now()).getYears();
-        if (age < 18 || age > 60) {
-            throw new RuntimeException(EMPLOYEE_AGE_MUST_BE_BETWEEN_18_AND_60);
-        }
-        return dob;
-    }
-	
+
+		if (dob.isAfter(LocalDate.now()))
+			throw new RuntimeException(DATE_OF_BIRTH_CANNOT_BE_IN_FUTURE);
+		int age = Period.between(dob, LocalDate.now()).getYears();
+		if (age < 18 || age > 60)
+			throw new RuntimeException(EMPLOYEE_AGE_MUST_BE_BETWEEN_18_AND_60);
+		return dob;
+	}
+
 }
